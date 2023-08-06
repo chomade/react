@@ -72,6 +72,7 @@ class MyScene : Scene() {
                             return@onDown
                         }
                         rectText.text = "반응 시간: ${endTime - startTime}"
+                        middleText.text = "준비가 되었으면 클릭합니다"
                     }
                     STOP -> {
                         launchImmediately { sceneContainer.changeTo<MyScene>() }
