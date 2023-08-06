@@ -1,3 +1,5 @@
+import ClickMode.*
+import korlibs.datastructure.*
 import korlibs.time.*
 import korlibs.korge.*
 import korlibs.korge.scene.*
@@ -11,76 +13,86 @@ import korlibs.image.format.*
 import korlibs.image.text.*
 import korlibs.io.async.*
 import korlibs.io.file.std.*
+import korlibs.io.lang.*
 import korlibs.korge.input.*
 import korlibs.korge.time.*
+import korlibs.korge.view.align.*
 import korlibs.math.geom.*
 import korlibs.math.interpolation.*
+import kotlinx.coroutines.*
+import org.koin.core.context.*
+import org.koin.dsl.*
+import kotlin.coroutines.*
 import kotlin.random.*
 
-suspend fun main() = Korge(
-    backgroundColor = Colors["#000000"],
-        scaleMode = ScaleMode.NO_SCALE) {
-	val sceneContainer = sceneContainer()
+lateinit var font: Font
 
-	sceneContainer.changeTo { MyScene() }
+object ColorPalette {
+    val GREEN = Colors["#00FF00"]
+    val GRAY = Colors["#797979"]
 }
 
-data class ClickState(
-    val count: Int,
-    val startTime: TimeSpan,
-    val period: TimeSpan,
-)
+enum class ClickMode {
+    IDLE, PLAY, STOP
+}
+
+suspend fun main() = Korge(backgroundColor = Colors["#000000"]) {
+    val sceneContainer = sceneContainer()
+    font = resourcesVfs["fonts/NanumSquareNeoTTF-dEb.woff"].readWoffFont()
+    sceneContainer.changeTo { MyScene() }
+}
 
 
-//ㅠㅁㅊ
 class MyScene : Scene() {
+
     override suspend fun SContainer.sceneMain() {
-        val background = solidRect(root.size.width, root.size.height, Colors["#808080"])
-        val middleText = uiText("Click if you are ready") {
+        val background = solidRect(root.size.width, root.size.height, ColorPalette.GRAY)
+        var startTime = DateTime.now()
+        var endTime = DateTime.now()
+        var clickMode = IDLE
+        uiContainer(size) {
             styles {
-                width = root.size.width
-                height = root.size.height
+                textSize = 32.0F
+                textColor = Colors.WHITE
+                textFont = font
                 textAlignment = TextAlignment.MIDDLE_CENTER
-                textColor = Colors.WHITE
-                textFont = resourcesVfs["fonts/NanumSquareNeoTTF-dEb.woff"].readWoffFont()
-                textSize = 32.0F
             }
-        }
-        val rectText = uiText("") {
-            styles {
-                width = root.size.width / 10
-                height = root.size.height / 10
-                textAlignment = TextAlignment.TOP_LEFT
-                textColor = Colors.WHITE
-                textFont = resourcesVfs["fonts/NanumSquareNeoTTF-dEb.woff"].readWoffFont()
-                textSize = 32.0F
-            }
-        }
-        onClick {
-            if (change == 0) {
-                background.color = Colors["#FF0000"]
-                middleText.text = "Click when the screen turns green"
-                change = 1
-                val cancellable = timers.timeout((2..8).random().seconds) {
-                    background.color = Colors["#00FF00"]
-                    startTime = DateTime.now()
-                    middleText.text = ""
-                    change = 2
+            val middleText = uiText("준비가 되었으면 클릭합니다").centerOnStage()
+            val rectText = uiText("")
+                .alignX(root, 0.1, true)
+                .alignY(root, 0.1, true)
+            mouse.onDown {
+                println("asdf")
+                when(clickMode) {
+                    IDLE -> {
+                        middleText.text = "화면이 녹색으로 바뀌면 클릭하세요"
+                        val period = randomPeriod()
+                        startTime = DateTime.now() + period
+                        timers.timeout(period) {
+                            startTime = DateTime.now()
+                            middleText.text = ""
+                            background.color = ColorPalette.GREEN
+                        }
+                    }
+                    PLAY -> {
+                        background.color = ColorPalette.GRAY
+                        endTime = DateTime.now()
+                        if (endTime < startTime) {
+                            //todo 늦게 누름
+                            return@onDown
+                        }
+                        rectText.text = "반응 시간: ${endTime - startTime}"
+                    }
+                    STOP -> {
+                        launchImmediately { sceneContainer.changeTo<MyScene>() }
+                    }
                 }
-            }else if (change == 1) {
-                background.color = Colors["#797979"]
-                middleText.text = "Please Click when the screen turns green. Click if you are ready"
-                change = 0
-            }
-            else if (change == 2) {
-                endTime = DateTime.now()
-                reactTime = (endTime - startTime).milliseconds.toInt()
-                background.color = Colors["#808080"]
-                middleText.text = "Click if you are ready"
-                rectText.text = "reaction time: ${reactTime}ms"
-                change = 0
+                clickMode = ClickMode.values()[clickMode.ordinal+1]
+
             }
         }
     }
 }
 
+
+fun randomPeriod() = Random.nextDouble(1.0, 2.0).seconds
