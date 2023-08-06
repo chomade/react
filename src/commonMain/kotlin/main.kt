@@ -68,7 +68,7 @@ class MyScene : Scene() {
                         background.color = ColorPalette.GRAY
                         endTime = DateTime.now()
                         if (endTime < startTime) {
-                            //todo 늦게 누름
+                            middleText.text = "화면이 녹색으로 바뀌면 클릭하십시오. 준비가 되었으면 클릭하십시오"
                             return@onDown
                         }
                         rectText.text = "반응 시간: ${endTime - startTime}"
