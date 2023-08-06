@@ -1,28 +1,18 @@
 import ClickMode.*
-import korlibs.datastructure.*
-import korlibs.time.*
-import korlibs.korge.*
-import korlibs.korge.scene.*
-import korlibs.korge.tween.*
-import korlibs.korge.view.*
-import korlibs.korge.style.*
-import korlibs.korge.ui.*
 import korlibs.image.color.*
 import korlibs.image.font.*
-import korlibs.image.format.*
 import korlibs.image.text.*
 import korlibs.io.async.*
 import korlibs.io.file.std.*
-import korlibs.io.lang.*
+import korlibs.korge.*
 import korlibs.korge.input.*
+import korlibs.korge.scene.*
+import korlibs.korge.style.*
 import korlibs.korge.time.*
+import korlibs.korge.ui.*
+import korlibs.korge.view.*
 import korlibs.korge.view.align.*
-import korlibs.math.geom.*
-import korlibs.math.interpolation.*
-import kotlinx.coroutines.*
-import org.koin.core.context.*
-import org.koin.dsl.*
-import kotlin.coroutines.*
+import korlibs.time.*
 import kotlin.random.*
 
 lateinit var font: Font
