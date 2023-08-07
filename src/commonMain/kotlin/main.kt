@@ -21,6 +21,7 @@ lateinit var font: Font
 object ColorPalette {
     val GREEN = Colors["#00FF00"]
     val GRAY = Colors["#797979"]
+    val RED = Colors["#FF0000"]
 }
 
 enum class ClickMode {
@@ -48,7 +49,7 @@ class MyScene : Scene() {
                 textFont = font
                 textAlignment = TextAlignment.MIDDLE_CENTER
             }
-            val middleText = uiText("준비가 되었으면 클릭합니다").centerOnStage()
+            val middleText = uiText("준비가 되었으면 화면을 클릭하세요").centerOnStage()
             val rectText = uiText("")
                 .alignX(sceneContainer, 0.1, true)
                 .alignY(sceneContainer, 0.1, true)
@@ -57,7 +58,8 @@ class MyScene : Scene() {
                 println("asdf")
                 when(clickMode) {
                     IDLE -> {
-                        middleText.text = "화면이 녹색으로 바뀌면 클릭하세요"
+                        middleText.text = "화면이 녹색으로 바뀌면 화면을 클릭하세요"
+                        background.color = ColorPalette.RED
                         val period = randomPeriod()
                         startTime = DateTime.now() + period
                         timers.timeout(period) {
@@ -70,13 +72,13 @@ class MyScene : Scene() {
                         background.color = ColorPalette.GRAY
                         endTime = DateTime.now()
                         if (endTime < startTime) {
-                            middleText.text = "화면이 녹색으로 바뀌면 클릭하십시오. 준비가 되었으면 클릭하십시오"
+                            middleText.text = "화면이 녹색으로 바뀌었을때 클릭하세요. 다시 시작하시려면 화면을 클릭하세요"
                             cancellable.cancel()
                             clickMode = IDLE
                             return@onDown
                         }
                         rectText.text = "반응 시간: ${endTime - startTime}"
-                        middleText.text = "준비가 되었으면 클릭합니다"
+                        middleText.text = "준비가 되었으면 화면을 클릭하세요"
                     }
                     STOP -> {
                         launchImmediately { sceneContainer.changeTo<MyScene>() }
