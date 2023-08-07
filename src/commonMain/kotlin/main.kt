@@ -17,6 +17,7 @@ import korlibs.time.*
 import kotlin.random.*
 
 lateinit var font: Font
+val reacts = arrayListOf<TimeSpan>()
 
 object ColorPalette {
     val GREEN = Colors["#00FF00"]
@@ -50,6 +51,9 @@ class MyScene : Scene() {
                 textAlignment = TextAlignment.MIDDLE_CENTER
             }
             val middleText = uiText("준비가 되었으면 화면을 클릭하세요").centerOnStage()
+            val averageText = uiText("")
+                .alignX(sceneContainer, 0.9, true)
+                .alignY(sceneContainer, 0.1, true)
             val rectText = uiText("")
                 .alignX(sceneContainer, 0.1, true)
                 .alignY(sceneContainer, 0.1, true)
@@ -71,13 +75,16 @@ class MyScene : Scene() {
                     PLAY -> {
                         background.color = ColorPalette.GRAY
                         endTime = DateTime.now()
-                        if (endTime < startTime) {
+                        val react = endTime - startTime
+                        if (react < 0.seconds) {
                             middleText.text = "화면이 녹색으로 바뀌었을때 클릭하세요. 다시 시작하시려면 화면을 클릭하세요"
                             cancellable.cancel()
                             clickMode = IDLE
                             return@onDown
                         }
-                        rectText.text = "반응 시간: ${endTime - startTime}"
+                        reacts.add(react)
+                        rectText.text = "반응 시간: $react"
+                        averageText.text = "평균 반응 시간: ${reacts.map { it.milliseconds }.average().toInt()}ms"
                         middleText.text = "준비가 되었으면 화면을 클릭하세요"
                     }
                     STOP -> {
