@@ -39,7 +39,7 @@ suspend fun main() = Korge(backgroundColor = Colors["#000000"]) {
 class MyScene : Scene() {
 
     override suspend fun SContainer.sceneMain() {
-        val background = solidRect(sceneContainer.size, ColorPalette.GRAY)
+        val background = solidRect(sceneContainer.size , ColorPalette.GRAY).centerOnStage()
         var startTime = DateTime.now()
         var endTime = DateTime.now()
         var clickMode = IDLE
@@ -63,7 +63,7 @@ class MyScene : Scene() {
                 when(clickMode) {
                     IDLE -> {
                         middleText.text = "화면이 녹색으로 바뀌면 화면을 클릭하세요"
-                        background.color = ColorPalette.RED
+                        background.color = Colors.PALEVIOLETRED
                         val period = randomPeriod()
                         startTime = DateTime.now() + period
                         timers.timeout(period) {
