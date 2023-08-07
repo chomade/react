@@ -37,7 +37,7 @@ suspend fun main() = Korge(backgroundColor = Colors["#000000"]) {
 class MyScene : Scene() {
 
     override suspend fun SContainer.sceneMain() {
-        val background = solidRect(root.size.width, root.size.height, ColorPalette.GRAY)
+        val background = solidRect(sceneContainer.size, ColorPalette.GRAY)
         var startTime = DateTime.now()
         var endTime = DateTime.now()
         var clickMode = IDLE
@@ -50,8 +50,8 @@ class MyScene : Scene() {
             }
             val middleText = uiText("준비가 되었으면 클릭합니다").centerOnStage()
             val rectText = uiText("")
-                .alignX(root, 0.1, true)
-                .alignY(root, 0.1, true)
+                .alignX(sceneContainer, 0.1, true)
+                .alignY(sceneContainer, 0.1, true)
             lateinit var cancellable: Cancellable
             mouse.onDown {
                 println("asdf")
